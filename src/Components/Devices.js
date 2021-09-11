@@ -16,7 +16,6 @@ const Devices = () => {
 
     useEffect(() => {
         const interval = setInterval(async () => {
-        //   setActiveDevices(activeDevices+1)
         try{
             let updatePoll = await axios.get(devicesAPI, null);
             let pollUserList = updatePoll.data.devices;
