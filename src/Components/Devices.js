@@ -8,7 +8,7 @@ import { devicesAPI, notifyAPI } from '../Url/ApiList';
 
 
 const Devices = () => {
-    const [activeDevices, setActiveDevices] = useState(3);
+    const [activeDevices, setActiveDevices] = useState(0);
     const [activeUserData, setActiveUserData] = useState([]);
     const graph = useRef(null);
 
