@@ -4,7 +4,7 @@ import { useHistory, withRouter } from 'react-router-dom';
 import { NotificationManager } from "react-notifications";
 import _ from "lodash";
 import axios from 'axios';
-import {devicesAPI} from '../Url/ApiList';
+import { devicesAPI, notifyAPI } from '../Url/ApiList';
 
 
 const Devices = () => {
@@ -14,28 +14,28 @@ const Devices = () => {
 
     const history = useHistory();
 
-    // useEffect(() => {
-    //     const interval = setInterval(async () => {
-    //     //   setActiveDevices(activeDevices+1)
-    //     try{
-    //         let updatePoll = await axios.get(devicesAPI, null);
-    //         let pollUserList = updatePoll.data.devices;
-    //         setActiveUserData(pollUserList);
-    //         setActiveDevices(pollUserList.length);
-    //     }catch(error){
-    //         if (error.response) {
-    //             let message = "Some Error Occured"
-    //             NotificationManager.error(message, "Error", 5000);
-    //         } else if (error.request) {
-    //             NotificationManager.error("Error Connecting...", "Error", 5000);
-    //         } else if (error) {
-    //             NotificationManager.error(error.toString(), "Error", 5000);
-    //         }
-    //     }
-        
-    //       }, 5000);          
-    //     return () => clearInterval(interval);
-    //   }, [activeDevices]);
+    useEffect(() => {
+        const interval = setInterval(async () => {
+        //   setActiveDevices(activeDevices+1)
+        try{
+            let updatePoll = await axios.get(devicesAPI, null);
+            let pollUserList = updatePoll.data.devices;
+            setActiveUserData(pollUserList);
+            setActiveDevices(pollUserList.length);
+        }catch(error){
+            if (error.response) {
+                let message = "Some Error Occured"
+                NotificationManager.error(message, "Error", 5000);
+            } else if (error.request) {
+                NotificationManager.error("Error Connecting...", "Error", 5000);
+            } else if (error) {
+                NotificationManager.error(error.toString(), "Error", 5000);
+            }
+        }
+
+          }, 5000);          
+        return () => clearInterval(interval);
+      }, [activeDevices]);
 
 
 
@@ -57,12 +57,43 @@ const Devices = () => {
 
 
     // Notify
-    let notify = () =>{
+    let notify = async () => {
         console.log("notify");
+        let authToken = localStorage.getItem('token');
+        const config = {
+            headers: {
+                Authorization: `Bearer ${authToken}`
+            },
+        };
+
+        const obj = {
+            name: "Md. Mehedi Hasan",
+            email: "ishanmehadi@gmail.com",
+            repoUrl:"https://github.com/MehediHasan25/Frontend-test-solution",
+            message:"Great question for test, Thank you for giving me this opportunity."
+        }
+
+        try {
+            let completeNotify = await axios.post(notifyAPI, obj, config);
+            NotificationManager.success(completeNotify.data, "Success", 5000);
+
+        } catch (err) {
+            console.log(err);
+            console.log(err.response);
+            if (err.response) {
+                let message = err.response.statusText;
+                NotificationManager.error(message, "Error", 5000);
+            } else if (err.request) {
+                NotificationManager.error("Error Connecting...", "Error", 5000);
+            } else if (err) {
+                NotificationManager.error(err.toString(), "Error", 5000);
+            }
+        }
+
     }
 
     // Logout
-    let logout =()=>{
+    let logout = () => {
         localStorage.removeItem('token');
         history.replace('/');
     }
@@ -77,16 +108,16 @@ const Devices = () => {
                         <p>DEVICES ONLINE</p>
                     </div>
 
-                    <div>                    
-                    <div className="ciclegraph" ref={graph}>
-                    {_.times(activeDevices, (i) => (
-                        <div className="circle" key={i}/>
-                      ))}
-                    </div>
+                    <div>
+                        <div className="ciclegraph" ref={graph}>
+                            {_.times(activeDevices, (i) => (
+                                <div className="circle" key={i} />
+                            ))}
+                        </div>
                     </div>
 
-                   
-                    
+
+
 
                 </div>
             </div>
